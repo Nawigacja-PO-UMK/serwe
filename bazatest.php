@@ -1,24 +1,25 @@
 <?php
 
-
-$odebranedane= $_POST['dane'];
-
-if (isset($odebranedane)) {
-  try {
-    $skany=json_decode($odebranedane);
-    $client = new MongoClient("mongodb://localhost:27017");
-    foreach($skany as $key => $value)
+if (isset($_POST['dane'])) {
+    $odebranedane= $_POST['dane'];
+    if(filesize("baza_test.jos")!=0)
     {
-      $client->test->insert($value);
+        $dane = fread(fopen("baza_test.jos", "r"), filesize("baza_test.jos"));
+        $skany=json_decode($dane);
+        $skan=json_decode($odebranedane);
+        $result = array_merge($skany,$skan);
+        $dane=json_encode($result);
     }
-    echo"dane wysłane";
-  } catch (Exception $e) {
-   echo $e->getMessage();
-  }
+   else
+        $dane=$odebranedane;
 
+    $fp = fopen("baza_test.jos", "w");
+    fputs($fp,$dane);
+    fclose($fp);
+    echo  "dane wysłane";
   }
-
   else {
-    echo 'bład wysłania';
+    echo "bład wysłania";
   }
  ?>
+
