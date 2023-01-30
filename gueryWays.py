@@ -46,12 +46,23 @@ def search_way(startpoint,endpoint,startlevel,endlevel):
 
 
 
-#test działadnia
-start_point=filter_ways(18.602784544967676,53.017013352,"0")
-end_point=filter_ways(18.60239408804935,53.01733814244693,"0")
+start_point=[int(sys.argv[1]),int(sys.argv[2])]
+start_level=str(sys.argv[3])
+end_point=[int(sys.argv[4]),int(sys.argv[5])]
+end_level=str(sys.argv[6])
 
 print(start_point)
 print(end_point)
-search_way(start_point,end_point,"0","0")
+start_point=filter_ways(start_point[0],start_point[1],start_level)
+end_point=filter_ways(end_point[0],end_point[1],end_level)
+
+#test działąnia
+#start_point=filter_ways(18.602784544967676,53.017013352,"0")
+#end_point=filter_ways(18.60239408804935,53.01733814244693,"0")
+
+print(start_point)
+print(end_point)
+search_way(start_point,end_point,start_level,end_level)
 
 client.close()
+                
