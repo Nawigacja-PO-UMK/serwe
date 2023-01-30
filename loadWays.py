@@ -1,5 +1,6 @@
 import json
 import os
+import math
 from neo4j import GraphDatabase
 
 client = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "Redkowice1"))
@@ -9,34 +10,36 @@ Scieszka="/var/www/html/OSRM.jos"
 def filter_ways(faktures):
     Ways=[]
     for faktura in faktures:
-        for keys in faktura["properties"].keys():
-            if(keys == "highway"):
-                if(faktura["properties"]["highway"]=="corridor"):
-                    Ways.append(faktura)
+            if( "highway" in faktura["properties"] and  "level" in faktura["properties"]  ):
+                if(faktura["properties"]["highway"]=="corridor" or  faktura["properties"]["highway"]=="steps" ):
+                     Ways.append(faktura)
 
     return Ways
 
-def Create_graf(tx,properties,point,lastpoint):
+def leng_way_points(point1,point2):
+    return math.sqrt(pow(point1[0]-point2[0],2)+pow(point1[1]-point1[1],2))
 
-    query="MERGE (:ways{ highway:$typway, level:$level,X:$x,Y:$y})"
-@@@ guery+="-[:Routing{Leng:$leng}]-(:ways{ highway:$typway2, level:$level2,X:$x2,Y:$y2})"
-    result=tx.run(query,typway=properties["highway"],level=properties["level"],x=point[1],y=point[2],typway2=properties["highway"],level2=properties["level"],x2=lastpoint[1],y2=lastpoint[2])
-    print("działa")
+
+def Create_graf(tx,args):
+
+    query="MERGE (:ways{ highway:$typway, level:$level,X:$x,Y:$y})-[:Routing{Leng:$leng}]-(:ways{ highway:$typway, level:$level,X:$x2,Y:$y2})"
+    result=tx.run(query,typway=args[0]["highway"],level=args[0]["level"],x=args[1][0],y=args[1][1],x2=args[2][0],y2=args[2][1],leng=(leng_way_points(args[1],args[2])))
     return result
 
-def Create_graf_way(way,session):
-    lastpoint=-1
-    for point in way["geometry"]["coordinates"]:
-        if(lastpoint!=-1):
-            print(session.execute_write(create_graf,way["properties"],point,lastpoint))
+def Create_graf_way(way):
+    with client.session() as session:
+        lastpoint=-1
+        for point in way["geometry"]["coordinates"]:
+            if(lastpoint!=-1):
+                session.write_transaction(Create_graf,[way["properties"],point,lastpoint])
             lastpoint=point
 
 
+
 def add__ways(ways):
-    session=client.session()
     for way in ways:
-        Create_graf_way(way,session)
-     session.close()
+        Create_graf_way(way)
+
 
 
 
@@ -49,4 +52,3 @@ ways=filter_ways(DANE["features"])
 add__ways(ways)
 
 client.close()
-
