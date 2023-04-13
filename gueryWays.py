@@ -5,7 +5,7 @@ import math
 from neo4j import GraphDatabase
 
 client = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "Redkowice1"))
-Scieszka="/var/www/html/OSRM.jos"
+Scieszka="/home/mateusz/source/serwe/OSRM.geojson"
 
 
 def filter_ways(x,y,level):
@@ -21,7 +21,6 @@ def filter_ways(x,y,level):
                     X=way.data("ways")["ways"]["X"]
                     Y=way.data("ways")["ways"]["Y"]
                     minway=leng
-                    print(minway,X,Y)
     return [X,Y]
 
 def query_ways(tx):
@@ -34,34 +33,36 @@ def leng_way_points(point1,point2):
 
 def guery_way(tx,args):
 
-    query="MATCH (source:ways{ level:$level,X:$x,Y:$y}),(target:ways{level:$level_end,X:$x_end,Y:$y_end}),p = shortestPath((source)-[*]-(target)) Return p"
-    result=tx.run(query,level=args[0],x=args[1][0],y=args[1][1],level_end=args[2],x_end=args[3][0],y_end=args[3][1])
-    return list(result)
+    query="MATCH (source:ways{ level:$start_level,X:$x,Y:$y}),(target:ways{level:$end_level,X:$x_end,Y:$y_end}),p = shortestPath((source)-[*]-(target)) Return p"
+    result=tx.run(query,start_level= str(args[0]) ,x=args[1][0],y=args[1][1],end_level= str(args[2]),x_end=args[3][0],y_end=args[3][1])
+    return result.data("p")
 
 def search_way(startpoint,endpoint,startlevel,endlevel):
     with client.session() as session:
         way=session.read_transaction(guery_way,[startlevel,startpoint,endlevel,endpoint])
-        for path in way:
-            print(path.data("p"))
+        for path in way[0]["p"]:
+            print(path)
 
 
 
-start_point=[int(sys.argv[1]),int(sys.argv[2])]
-start_level=str(sys.argv[3])
-end_point=[int(sys.argv[4]),int(sys.argv[5])]
-end_level=str(sys.argv[6])
+#start_point=[int(sys.argv[1]),int(sys.argv[2])]
+#start_level=str(sys.argv[3])
+#end_point=[int(sys.argv[4]),int(sys.argv[5])]
+#end_level=str(sys.argv[6])
 
-print(start_point)
-print(end_point)
-start_point=filter_ways(start_point[0],start_point[1],start_level)
-end_point=filter_ways(end_point[0],end_point[1],end_level)
+#print(start_point)
+#print(end_point)
+#start_point=filter_ways(start_point[0],start_point[1],start_level)
+#end_point=filter_ways(end_point[0],end_point[1],end_level)
 
 #test działąnia
-#start_point=filter_ways(18.602784544967676,53.017013352,"0")
-#end_point=filter_ways(18.60239408804935,53.01733814244693,"0")
+start_point=filter_ways(18.602784544967676,53.017013352,"-1")
+end_point=filter_ways(18.60239408804935,53.01733814244693,"1")
 
 print(start_point)
 print(end_point)
+start_level=-1
+end_level=1
 search_way(start_point,end_point,start_level,end_level)
 
 client.close()
