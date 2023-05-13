@@ -4,7 +4,7 @@ import math
 from neo4j import GraphDatabase
 
 client = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "Redkowice1"))
-Scieszka="/home/mateusz/source/serwe/OSRM.geojson"
+Scieszka="/var/www/html/server/serwe/OSRM.geojson"
 
 
 def filter_ways(faktures):

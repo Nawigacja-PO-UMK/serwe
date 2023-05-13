@@ -1,8 +1,8 @@
 import json
 import os
-import pandas as pd
 import math
-from neo4j import GraphDatabase
+import sys
+from neo4j import GraphDatabase, basic_auth
 
 client = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "Redkowice1"))
 Scieszka="/home/mateusz/source/serwe/OSRM.geojson"
@@ -40,29 +40,26 @@ def guery_way(tx,args):
 def search_way(startpoint,endpoint,startlevel,endlevel):
     with client.session() as session:
         way=session.read_transaction(guery_way,[startlevel,startpoint,endlevel,endpoint])
+        search=[]
         for path in way[0]["p"]:
-            print(path)
+            if(path!="Routing"):
+                search.append(path)
+        print(search)
 
 
 
-#start_point=[int(sys.argv[1]),int(sys.argv[2])]
-#start_level=str(sys.argv[3])
-#end_point=[int(sys.argv[4]),int(sys.argv[5])]
-#end_level=str(sys.argv[6])
+start_point=[int(sys.argv[1]),int(sys.argv[2])]
+start_level=str(sys.argv[3])
+end_point=[int(sys.argv[4]),int(sys.argv[5])]
+end_level=str(sys.argv[6])
 
-#print(start_point)
-#print(end_point)
-#start_point=filter_ways(start_point[0],start_point[1],start_level)
-#end_point=filter_ways(end_point[0],end_point[1],end_level)
+start_point=filter_ways(start_point[0],start_point[1],start_level)
+end_point=filter_ways(end_point[0],end_point[1],end_level)
 
 #test działąnia
-start_point=filter_ways(18.602784544967676,53.017013352,"-1")
-end_point=filter_ways(18.60239408804935,53.01733814244693,"1")
+#start_point=filter_ways(18.602784544967676,53.017013352,"-1")
+#end_point=filter_ways(18.60239408804935,53.01733814244693,"1")
 
-print(start_point)
-print(end_point)
-start_level=-1
-end_level=1
 search_way(start_point,end_point,start_level,end_level)
 
 client.close()
