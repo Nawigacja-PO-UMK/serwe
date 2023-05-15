@@ -43,10 +43,14 @@ def search_way(startpoint,endpoint,startlevel,endlevel):
     with client.session() as session:
         way=session.read_transaction(guery_way,[startlevel,startpoint,endlevel,endpoint])
         search=[]
-        for path in way[0]["p"]:
-            if(path!="Routing"):
-                search.append(path)
-        print(search)
+        if(way==None or not way or "p" in way[0]):
+            print("nie można znaleść ścieszki")
+        else:
+            print(way[0])
+            for path in way[0]["p"]:
+                if(path!="Routing"):
+                    search.append(path)
+            print(search)
 
 start_point=[float(sys.argv[1]),float(sys.argv[2])]
 start_level=sys.argv[3]
@@ -56,13 +60,19 @@ end_level=sys.argv[6]
 start_point=filter_ways(start_point[0],start_point[1],str(start_level))
 end_point=filter_ways(end_point[0],end_point[1],str(end_level))
 
+print(start_point)
+print(end_point)
 #test działąnia
 #start_point=filter_ways(18.602784544967676,53.017013352,"-1")
 #end_point=filter_ways(18.60239408804935,53.01733814244693,"1")
 #start_level=-1
 #end_level=1
 
-search_way(start_point,end_point,int(start_level),int(end_level))
+if(start_point[0]==end_point[0]and start_point[0]==end_point[0]and start_level==end_level):
+    print("trasowanie jest nie możliwe")
+
+else:
+    search_way(start_point,end_point,int(start_level),int(end_level))
 
 client.close()
                 

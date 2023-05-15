@@ -10,7 +10,8 @@ Scieszka="/var/www/html/server/serwe/OSRM.geojson"
 def filter_ways(faktures):
     Ways=[]
     for faktura in faktures:
-            if( "highway" in faktura["properties"] and  "level" in faktura["properties"]  ):
+        if(None!=faktura and "properties" in faktura):
+            if( None!=faktura["properties"] and "highway" in faktura["properties"] and  "level" in faktura["properties"]  ):
                 if(faktura["properties"]["highway"]=="corridor" or  faktura["properties"]["highway"]=="steps" ):
                      Ways.append(faktura)
 
@@ -141,7 +142,6 @@ def Create_graf_way(way):
 def add__ways(ways):
     for way in ways:
         Create_graf_way(way)
-
 
 
 f= open(Scieszka,"r")
