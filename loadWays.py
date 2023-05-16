@@ -71,7 +71,7 @@ def search_mini_lenght_ways(x,y,level,leng0=False):
         for way in ways:
             if(way.data("ways")["ways"]["level"]==level ):
                 leng= leng_way_points([way.data("ways")["ways"]["X"],way.data("ways")["ways"]["Y"]],[x,y])
-                if((leng!=0.0 or leng0) and (leng < minway or minway==-1)):
+                if((leng < minway or minway==-1)):
                     X=way.data("ways")["ways"]["X"]
                     Y=way.data("ways")["ways"]["Y"]
                     minway=leng
@@ -104,8 +104,9 @@ def creat_all_relation(way,point):
     with client.session() as session:
         if(~is_consistency(ways,point)):
             if(is_steirs(way["properties"]["level"])==None):
-                w=search_mini_lenght_ways(point[0],point[1],way["properties"]["level"])
-                session.write_transaction(Create_graf_relation,[way["properties"],point,w])
+                w=1
+            #     w=search_mini_lenght_ways(point[0],point[1],way["properties"]["level"])
+            #    session.write_transaction(Create_graf_relation,[way["properties"],point,w])
             else:
                 steirs=is_steirs(way["properties"]["level"])
                 w1=search_mini_lenght_ways(point[0],point[1],str(steirs[0]),leng0=True)
