@@ -100,8 +100,6 @@ def is_steirs(level):
     return [level1,level2]
 
 
-
-
 def creat_all_relation(way,point):
     with client.session() as session:
         if(~is_consistency(ways,point)):
@@ -151,7 +149,7 @@ ways=filter_ways(DANE["features"])
 
 add__ways(ways)
 
-search_inconsistency(ways)
+#search_inconsistency(ways)
 
 
 client.close()
