@@ -3,9 +3,9 @@
 Silnik trasujący :
 
 loadWays.py- ładowanie wenzłów do Bazy neo4j
-<br></br>
+<br>
 gueryWays.py-zapytanie o drogę  
-<br></br>
+<br>
 ways_guery.php-gniazdo 
 
 zapis skanów :
